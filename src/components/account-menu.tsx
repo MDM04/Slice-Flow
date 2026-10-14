@@ -14,17 +14,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
+import { Skeleton } from './ui/skeleton'
 
 export function AccountMenu() {
-  const { data: profile } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile } = useQuery({
     queryKey: ['profile'],
     queryFn: getProfile,
   })
 
-  const { data: managedRestaurant } = useQuery({
-    queryKey: ['managed-restaurante'],
-    queryFn: getManageRestaurant,
-  })
+  const { data: managedRestaurant, isLoading: isLoadingManageRestaurant } =
+    useQuery({
+      queryKey: ['managed-restaurante'],
+      queryFn: getManageRestaurant,
+    })
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -33,7 +35,11 @@ export function AccountMenu() {
             variant="outline"
             className="flex items-center gap-2 select-none"
           >
-            {managedRestaurant?.name}
+            {isLoadingManageRestaurant ? (
+              <Skeleton className="h-4 w-40" />
+            ) : (
+              managedRestaurant?.name
+            )}
             <ChevronDown className="h-4 w-4" />
           </Button>
         }
@@ -42,11 +48,22 @@ export function AccountMenu() {
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuGroup>
           <DropdownMenuLabel className="flex flex-col">
-            <span>{profile?.name}</span>
+            {isLoadingProfile ? (
+              <div className="space-y-5">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
 
-            <span className="text-muted-foreground text-xs font-normal">
-              {profile?.email}
-            </span>
+                <Skeleton />
+              </div>
+            ) : (
+              <>
+                <span>{profile?.name}</span>
+
+                <span className="text-muted-foreground text-xs font-normal">
+                  {profile?.email}
+                </span>
+              </>
+            )}
           </DropdownMenuLabel>
         </DropdownMenuGroup>
 
